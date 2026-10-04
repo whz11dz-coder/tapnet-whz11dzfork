@@ -164,6 +164,9 @@ def main():
   parser.add_argument('--checkpoint', required=True, help='tapnextpp_ckpt.pt')
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--title', default=None)
+  parser.add_argument(
+      '--credit', default=None, help='Footage credit shown on the page.'
+  )
   parser.add_argument('--max_frames', type=int, default=0, help='0 = all')
   parser.add_argument('--max_width', type=int, default=854)
   parser.add_argument(
@@ -253,6 +256,7 @@ def main():
       'version': version,
       'title': args.title or clip_id,
       'source': pathlib.Path(args.video).name,
+      'credit': args.credit,
       'width': w,
       'height': h,
       'fps': fps,

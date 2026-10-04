@@ -37,7 +37,8 @@ python3 -m tapnet.motion_explorer.export_motion \
     --video horsejump-high.mp4 \
     --checkpoint checkpoints/tapnextpp_ckpt.pt \
     --out_dir tapnet/motion_explorer/web/data/horsejump \
-    --title "Horse jump"
+    --title "Horse jump" \
+    --credit "horsejump-high, DAVIS (davischallenge.org)"
 ```
 
 This writes `web/data/horsejump/frames/*.jpg`, `web/data/horsejump/motion.json`
@@ -70,8 +71,25 @@ python3 -m http.server 8000
 ```
 
 To put it on a website, upload the whole `web/` folder (the page plus `data/`).
-The page has no build step and no dependencies apart from Google Fonts, which
-fall back to system fonts if blocked.
+
+### Embedding in another site
+
+The viewer is a self-contained component: `motion-explorer.css` (every rule is
+scoped to `.motion-explorer`, every class, id and custom property starts with
+`me-`) and `motion-explorer.js`. To place it in an existing page:
+
+1. Copy the `<div class="motion-explorer">…</div>` block from `index.html`.
+2. Set `data-root` to the URL of the folder with `manifest.json`, and
+   optionally `data-lang="pl"` or `data-lang="en"` to fix the language.
+3. Load `motion-explorer.css` and `motion-explorer.js` with a `?v=` version.
+4. Define the `--me-*` colour tokens on `.motion-explorer`, for example by
+   mapping them onto the site's own variables. Leave the `--me-f-*` font
+   tokens undefined to inherit the site's fonts.
+The page has no build step and makes no third-party requests: its fonts
+(Bricolage Grotesque, Instrument Sans, JetBrains Mono; SIL OFL 1.1, see
+`web/fonts/OFL.txt`) are served from `web/fonts/`. `--credit` adds a footage
+credit to the page footer; use your own footage, or check the licence of the
+clip you export, before publishing.
 
 ## Caching
 
@@ -80,9 +98,12 @@ fall back to system fonts if blocked.
   invalidates cached frames and tracks automatically.
 * `manifest.json` itself is requested with `cache: 'no-cache'` and
   `?v=APP_VERSION`.
-* After any change to `index.html`, bump `APP_VERSION` near the top of its
-  script. It is also shown in the page footer, so you can tell which version a
-  browser has loaded.
+* Font files are requested without a version; give them a new file name if
+  they ever change.
+* After any change to the component, bump `APP_VERSION` near the top of
+  `motion-explorer.js` and the `?v=` of the tags that load
+  `motion-explorer.css` and `motion-explorer.js`. The version is also shown in
+  the component's credits, so you can tell which one a browser has loaded.
 
 ## `motion.json` format
 
